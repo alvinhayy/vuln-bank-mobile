@@ -31,5 +31,20 @@ target 'VulnerableBankApp' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    # Xcode 16/26's stricter C++ consteval evaluation breaks the `fmt` 11.0.2
+    # bundled by React Native 0.79 (RCT-Folly dependency):
+    #   fmt/format-inl.h: call to consteval function ... is not a constant expression
+    # fmt/base.h sets FMT_USE_CONSTEVAL unconditionally (no #ifndef guard), so a
+    # -DFMT_USE_CONSTEVAL=0 define is overridden. Patch the header to force it off.
+    fmt_base = File.join(installer.sandbox.root, 'fmt', 'include', 'fmt', 'base.h')
+    if File.exist?(fmt_base)
+      txt = File.read(fmt_base)
+      patched = txt.gsub("#  define FMT_USE_CONSTEVAL 1", "#  define FMT_USE_CONSTEVAL 0")
+      if patched != txt
+        File.write(fmt_base, patched)
+        Pod::UI.puts "[fmt patch] forced FMT_USE_CONSTEVAL 0 for Xcode compatibility"
+      end
+    end
   end
 end
