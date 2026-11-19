@@ -23,8 +23,9 @@ import type { TalsecConfig } from 'freerasp-react-native';
 export const talsecConfig: TalsecConfig = {
   androidConfig: {
     packageName: 'com.vulnerablebankapp',
-    // TODO: replace with the base64 SHA-256 hash(es) of your RELEASE signing certificate.
-    certificateHashes: ['REPLACE_WITH_RELEASE_SIGNING_CERT_SHA256_BASE64='],
+    // base64 SHA-256 of the release signing certificate (android/app/vbm-release.keystore,
+    // alias vbm-release). Regenerate this if you sign with a different keystore.
+    certificateHashes: ['78YlOUuNQp9mZORikbC8xItVhvDWMVECO+/KeXmFNeY='],
     // Optional: alternative app stores you consider trustworthy.
     // supportedAlternativeStores: ['com.sec.android.app.samsungapps'],
   },
