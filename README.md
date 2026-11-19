@@ -5,6 +5,12 @@
 
 This mobile app acts as a frontend for the [Vulnerable Bank API](https://github.com/Commando-X/vuln-bank), a purposely vulnerable web API with typical banking features.
 
+> 🛡️ **This fork** adds [Talsec **freeRASP**](https://github.com/talsec/Free-RASP-ReactNative)
+> (Runtime Application Self-Protection) as a *defensive* layer on top of the
+> vulnerable app, so you can watch RASP detect root/jailbreak, emulators,
+> debuggers, Frida/hooking and repackaging in real time. See
+> [**SECURITY-FREERASP.md**](./SECURITY-FREERASP.md).
+
 ---
 
 ## 📥 Download and Run Instantly (Recommended)
