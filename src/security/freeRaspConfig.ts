@@ -45,3 +45,19 @@ export const talsecConfig: TalsecConfig = {
   // of the app being killed instantly. Set true to harden a real release.
   killOnBypass: false,
 };
+
+/**
+ * RASP enforcement switch.
+ *
+ * freeRASP only *detects* threats and invokes your callbacks — the SDK never
+ * terminates the app by itself (and `killOnBypass` only guards against tampering
+ * with the callback mechanism, not ordinary threats). When this is `true`, the
+ * critical threats in `CRITICAL_THREATS` (see SecurityContext) trigger
+ * `abortApp()` — freeRASP's secure termination. Everything else only raises the
+ * on-screen banner, in either mode.
+ *
+ * Default `false` so this intentionally-vulnerable lab app stays launchable on
+ * rooted / emulator / developer devices (where critical checks fire on launch).
+ * Flip to `true` for a hardened build/demo where RASP should kill the app.
+ */
+export const ENFORCE_RASP = false;

@@ -7,13 +7,27 @@ import React, {
   useState,
 } from 'react';
 import {
+  abortApp,
   useFreeRasp,
   type CallState,
   type RaspExecutionStateEventActions,
   type SuspiciousAppInfo,
   type ThreatEventActions,
 } from 'freerasp-react-native';
-import { talsecConfig } from './freeRaspConfig';
+import { ENFORCE_RASP, talsecConfig } from './freeRaspConfig';
+
+/**
+ * Threats that terminate the app via `abortApp()` when `ENFORCE_RASP` is on.
+ * These are active attacks on the app, not environmental signals: root/jailbreak,
+ * a hooking framework (Frida/Xposed), and a repackaged/re-signed binary. Signals
+ * like devMode, adbEnabled, unofficialStore or simulator stay alert-only so the
+ * lab app remains usable on a test device.
+ */
+const CRITICAL_THREATS: ThreatName[] = [
+  'privilegedAccess',
+  'hooks',
+  'appIntegrity',
+];
 
 /**
  * Every threat freeRASP can report. Kept as a union so the rest of the app can
@@ -93,6 +107,15 @@ export const SecurityProvider: React.FC<{ children: React.ReactNode }> = ({
       `[freeRASP] threat detected: ${name}${detail ? ` — ${detail}` : ''}`,
     );
     setThreats(prev => (prev.includes(name) ? prev : [...prev, name]));
+
+    // Enforcement: terminate the app on an active attack. freeRASP never kills
+    // the app on its own — this is the reaction. Off by default (see ENFORCE_RASP).
+    if (ENFORCE_RASP && CRITICAL_THREATS.includes(name)) {
+      console.warn(
+        `[freeRASP] CRITICAL threat "${name}" — enforcing policy: terminating app`,
+      );
+      abortApp();
+    }
   }, []);
 
   const clearThreats = useCallback(() => setThreats([]), []);
