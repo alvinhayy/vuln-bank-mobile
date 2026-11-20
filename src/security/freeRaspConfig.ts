@@ -56,8 +56,10 @@ export const talsecConfig: TalsecConfig = {
  * `abortApp()` — freeRASP's secure termination. Everything else only raises the
  * on-screen banner, in either mode.
  *
- * Default `false` so this intentionally-vulnerable lab app stays launchable on
- * rooted / emulator / developer devices (where critical checks fire on launch).
- * Flip to `true` for a hardened build/demo where RASP should kill the app.
+ * `true` = hardened: the app terminates itself when an active attack is detected
+ * (root/jailbreak, hooking, repackaging). On a rooted/emulator/compromised
+ * device the app will close on launch — that is RASP working as intended.
+ * Set to `false` to return to observe-only mode (alert + banner, no kill) so the
+ * lab app stays launchable on such devices.
  */
-export const ENFORCE_RASP = false;
+export const ENFORCE_RASP = true;

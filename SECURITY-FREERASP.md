@@ -109,13 +109,27 @@ Every freeRASP callback (cross-platform, Android-only and iOS-only) is wired in
 `SecurityContext.tsx`, so additional checks (`systemVPN`, `screenshot`,
 `timeSpoofing`, `malware`, …) will surface the same way.
 
-### Hardening it for real
+### Enforcement (observe vs. react)
 
-For a production-grade posture, flip the behaviour from *observe* to *react*:
+freeRASP only *detects* threats and calls your callbacks — the SDK never kills
+the app on its own, and `killOnBypass` only guards against tampering with the
+callback mechanism, not ordinary threats. The reaction is your code.
 
-- Set `killOnBypass: true` and keep `isProd: true`.
-- In the threat callbacks, instead of just logging, log to your backend, wipe
-  session tokens, degrade functionality, or call `abortApp()` to terminate.
+This app exposes a single switch, `ENFORCE_RASP` in `src/security/freeRaspConfig.ts`:
+
+- `ENFORCE_RASP = true` (**default**): on an *active attack* — root/jailbreak
+  (`privilegedAccess`), a hooking framework (`hooks`), or a repackaged/re-signed
+  binary (`appIntegrity`) — the app calls `abortApp()` and terminates. On a
+  rooted/emulator/compromised device it closes on launch. Environmental signals
+  (`devMode`, `adbEnabled`, `unofficialStore`, `simulator`, …) stay alert-only.
+- `ENFORCE_RASP = false`: observe-only — every threat just raises the on-screen
+  banner, nothing is killed. Use this to keep the lab app launchable on a rooted
+  test device.
+
+The critical set lives in `CRITICAL_THREATS` in `src/security/SecurityContext.tsx`.
+For a production posture you can also keep `isProd: true`, and in the callbacks
+log to your backend, wipe session tokens, or degrade functionality instead of
+(or in addition to) terminating.
 
 ---
 
